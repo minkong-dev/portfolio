@@ -7,3 +7,4 @@ venv/
 *.log
 backend/data/images/*
 !backend/data/images/.gitkeep
+!backend/data/images/profile.jpg

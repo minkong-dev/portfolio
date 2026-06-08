@@ -25,12 +25,7 @@ const CONTRIB_META = {
   extra: { label: '추가', bg: '#f9fafb', fg: '#6b7280', border: '#e5e7eb' },
 };
 
-const TABLE_ROW_BG = {
-  pos: '#f0fdf4',
-  neg: '#fff1f2',
-  neu: '#fffbeb',
-  '': '',
-};
+const TABLE_ROW_BG = { pos: '#f0fdf4', neg: '#fff1f2', neu: '#fffbeb', '': '' };
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let allProjects    = [];
@@ -44,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     startOnLoad: false,
     theme: 'neutral',
     securityLevel: 'loose',
-    flowchart: { htmlLabels: true, curve: 'basis' },
+    flowchart: { htmlLabels: true, curve: 'basis', useMaxWidth: true },
   });
 
   try {
@@ -54,6 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ]);
     allProjects = projects;
     renderHero(about);
+    renderCareer(about);
     renderFilterTabs();
     renderCards();
   } catch (err) {
@@ -66,14 +62,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ── Hero ──────────────────────────────────────────────────────────────────────
 function renderHero(about) {
   document.title = `${about.name} · 포트폴리오`;
-  setText('hero-name', about.name);
-  setText('hero-desc', about.description);
-  setText('contact-email-text', about.contact.email);
-  const emailLink = document.getElementById('contact-email');
-  if (emailLink) emailLink.href = `mailto:${about.contact.email}`;
-  setText('contact-note', about.contact.note);
 
-  // skill pills
+  setText('hero-tagline', about.tagline || '');
+  setText('hero-name', about.name);
+
+  // Intro paragraphs
+  const introEl = document.getElementById('hero-intro');
+  if (introEl && Array.isArray(about.intro)) {
+    introEl.innerHTML = about.intro.map(p => `<p>${esc(p)}</p>`).join('');
+  }
+
+  // Contact links
+  const emailLink = document.getElementById('contact-email');
+  const emailText = document.getElementById('contact-email-text');
+  if (emailLink && about.contact?.email) {
+    emailLink.href = `mailto:${about.contact.email}`;
+    if (emailText) emailText.textContent = about.contact.email;
+  }
+
+  const githubLink = document.getElementById('contact-github');
+  if (githubLink && about.contact?.github) {
+    githubLink.href = about.contact.github;
+  }
+
+  // Skills
   const skillsEl = document.getElementById('hero-skills');
   if (skillsEl) {
     skillsEl.innerHTML = (about.skills || []).map(s =>
@@ -81,15 +93,49 @@ function renderHero(about) {
     ).join('');
   }
 
-  // stats
-  const statsEl = document.getElementById('stats-grid');
-  if (statsEl) {
-    statsEl.innerHTML = (about.stats || []).map(s => `
-      <div class="stat-item">
-        <span class="stat-num">${esc(s.num)}</span>
-        <span class="stat-label">${esc(s.label)}</span>
+  // Note
+  setText('contact-note', about.contact?.note || '');
+
+  // Personal info under photo
+  const personalEl = document.getElementById('hero-personal');
+  if (personalEl && about.personal) {
+    const items = [about.personal.birth, about.personal.military].filter(Boolean);
+    personalEl.innerHTML = items.map(t =>
+      `<span class="personal-item">${esc(t)}</span>`
+    ).join('');
+  }
+}
+
+// ── Career ────────────────────────────────────────────────────────────────────
+function renderCareer(about) {
+  const listEl = document.getElementById('career-list');
+  if (listEl && Array.isArray(about.career)) {
+    listEl.innerHTML = about.career.map(c => `
+      <div class="career-item">
+        <div class="career-left">
+          <span class="career-type-badge badge-${esc(c.type)}">${esc(c.type)}</span>
+          <div class="career-period">${esc(c.period)}</div>
+          <div class="career-duration">${esc(c.duration)}</div>
+        </div>
+        <div class="career-right">
+          <div class="career-company">${esc(c.company)}</div>
+          <div class="career-role">${esc(c.role)} · ${esc(c.field)}</div>
+          <ul class="career-tasks">
+            ${(c.tasks || []).map(t => `<li class="career-task">${esc(t)}</li>`).join('')}
+          </ul>
+        </div>
       </div>
     `).join('');
+  }
+
+  const eduEl = document.getElementById('education-block');
+  if (eduEl && about.education) {
+    const e = about.education;
+    eduEl.innerHTML = `
+      <span class="edu-label">학력</span>
+      <span class="edu-info">${esc(e.school)} · ${esc(e.major)}</span>
+      <span class="edu-sub">${esc(e.period)} (${esc(e.status)})</span>
+    `;
   }
 }
 
@@ -161,29 +207,23 @@ function renderCards() {
   grid.querySelectorAll('.project-card').forEach(card => {
     card.addEventListener('click', () => openModal(card.dataset.id));
     card.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openModal(card.dataset.id);
-      }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(card.dataset.id); }
     });
   });
 }
 
-// ── Modal setup ───────────────────────────────────────────────────────────────
+// ── Modal ─────────────────────────────────────────────────────────────────────
 function setupModal() {
-  const overlay  = document.getElementById('modal-overlay');
-  const closeBtn = document.getElementById('modal-close');
-
-  closeBtn.addEventListener('click', closeModal);
-  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target.id === 'modal-overlay') closeModal();
   });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  document.querySelectorAll('.tab-btn').forEach(btn =>
+    btn.addEventListener('click', () => setActiveTab(btn.dataset.tab))
+  );
 }
 
-// ── Open / close modal ────────────────────────────────────────────────────────
 async function openModal(projectId) {
   try {
     currentProject = await fetch(`/api/projects/${projectId}`).then(r => {
@@ -197,33 +237,23 @@ async function openModal(projectId) {
 
   const p = currentProject;
 
-  // Header
   setText('modal-num', `#${p.num}`);
   setText('modal-title', p.title);
   setText('modal-subtitle', p.subtitle);
-
-  const badge = document.getElementById('modal-badge');
-  badge.textContent = p.badge;
-
-  const catPill = document.getElementById('modal-category');
-  catPill.textContent = CATEGORY_LABELS[p.category] || p.category;
-
+  document.getElementById('modal-badge').textContent = p.badge;
+  document.getElementById('modal-category').textContent = CATEGORY_LABELS[p.category] || p.category;
   document.getElementById('modal-header').className = `modal-header cat-${p.category}`;
 
-  // Render content tabs (except architecture — rendered lazily)
   renderOverviewTab(p);
   renderContributionTab(p);
   renderResultsTab(p);
 
-  // Clear architecture cache flag to force re-render on next open
   const archPane = document.getElementById('tab-architecture');
   archPane.innerHTML = '';
   delete archPane.dataset.rendered;
 
-  // Reset to overview tab
   setActiveTab('overview');
 
-  // Show
   const overlay = document.getElementById('modal-overlay');
   overlay.classList.add('active');
   overlay.setAttribute('aria-hidden', 'false');
@@ -231,14 +261,12 @@ async function openModal(projectId) {
 }
 
 function closeModal() {
-  const overlay = document.getElementById('modal-overlay');
-  overlay.classList.remove('active');
-  overlay.setAttribute('aria-hidden', 'true');
+  document.getElementById('modal-overlay').classList.remove('active');
+  document.getElementById('modal-overlay').setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
   currentProject = null;
 }
 
-// ── Tab switching ─────────────────────────────────────────────────────────────
 function setActiveTab(tabName) {
   document.querySelectorAll('.tab-btn').forEach(btn =>
     btn.classList.toggle('active', btn.dataset.tab === tabName)
@@ -246,16 +274,12 @@ function setActiveTab(tabName) {
   document.querySelectorAll('.tab-pane').forEach(pane =>
     pane.classList.toggle('active', pane.id === `tab-${tabName}`)
   );
-
-  if (tabName === 'architecture' && currentProject) {
-    renderArchitectureTab(currentProject);
-  }
+  if (tabName === 'architecture' && currentProject) renderArchitectureTab(currentProject);
 }
 
 // ── Tab: 개요 ─────────────────────────────────────────────────────────────────
 function renderOverviewTab(p) {
-  const el = document.getElementById('tab-overview');
-  el.innerHTML = `
+  document.getElementById('tab-overview').innerHTML = `
     <div class="tab-section">
       <h4 class="section-label">프로젝트 개요</h4>
       <p class="body-text">${esc(p.overview || '')}</p>
@@ -264,32 +288,29 @@ function renderOverviewTab(p) {
     <div class="tab-section">
       <h4 class="section-label">개발 배경 · 동기</h4>
       <p class="body-text">${esc(p.motivation)}</p>
-    </div>
-    ` : ''}
+    </div>` : ''}
   `;
 }
 
-// ── Tab: 구조 (lazy Mermaid) ──────────────────────────────────────────────────
+// ── Tab: 구조 ─────────────────────────────────────────────────────────────────
 async function renderArchitectureTab(p) {
   const el = document.getElementById('tab-architecture');
   if (el.dataset.rendered === p.id) return;
 
   let html = '';
   if (p.architecture_desc) {
-    html += `
-      <div class="tab-section">
-        <h4 class="section-label">아키텍처 설명</h4>
-        <p class="body-text">${esc(p.architecture_desc)}</p>
-      </div>`;
+    html += `<div class="tab-section">
+      <h4 class="section-label">아키텍처 설명</h4>
+      <p class="body-text">${esc(p.architecture_desc)}</p>
+    </div>`;
   }
   if (p.architecture_mermaid) {
-    html += `
-      <div class="tab-section">
-        <h4 class="section-label">플로우차트</h4>
-        <div class="mermaid-wrap" id="mermaid-container">
-          <div class="mermaid-loading">다이어그램 렌더링 중…</div>
-        </div>
-      </div>`;
+    html += `<div class="tab-section">
+      <h4 class="section-label">플로우차트</h4>
+      <div class="mermaid-wrap" id="mermaid-container">
+        <div class="mermaid-loading">다이어그램 렌더링 중…</div>
+      </div>
+    </div>`;
   }
 
   el.innerHTML = html;
@@ -318,63 +339,49 @@ async function renderArchitectureTab(p) {
 // ── Tab: 기여 ─────────────────────────────────────────────────────────────────
 function renderContributionTab(p) {
   const el = document.getElementById('tab-contribution');
-
   const groups = { main: [], sub: [], extra: [] };
-  (p.contributions || []).forEach(c => {
-    if (groups[c.type]) groups[c.type].push(c.text);
-  });
+  (p.contributions || []).forEach(c => { if (groups[c.type]) groups[c.type].push(c.text); });
 
   const GROUP_LABELS = { main: '핵심 기여', sub: '지원 기여', extra: '추가 기여' };
-
   let html = '';
 
   for (const [type, items] of Object.entries(groups)) {
-    if (items.length === 0) continue;
+    if (!items.length) continue;
     const meta = CONTRIB_META[type];
-    html += `
-      <div class="tab-section">
-        <h4 class="section-label">${GROUP_LABELS[type]}</h4>
-        <ul class="contribution-list">
-          ${items.map(text => `
-            <li class="contribution-item">
-              <span class="contrib-badge"
-                    style="background:${meta.bg};color:${meta.fg};border-color:${meta.border}">
-                ${meta.label}
-              </span>
-              <span class="contrib-text">${esc(text)}</span>
-            </li>
-          `).join('')}
-        </ul>
-      </div>`;
+    html += `<div class="tab-section">
+      <h4 class="section-label">${GROUP_LABELS[type]}</h4>
+      <ul class="contribution-list">
+        ${items.map(text => `
+          <li class="contribution-item">
+            <span class="contrib-badge"
+                  style="background:${meta.bg};color:${meta.fg};border-color:${meta.border}">
+              ${meta.label}
+            </span>
+            <span class="contrib-text">${esc(text)}</span>
+          </li>`).join('')}
+      </ul>
+    </div>`;
   }
 
-  // Extra sections (tables etc.)
-  (p.extra_sections || []).forEach(section => {
-    if (section.type === 'table') html += renderTable(section);
-  });
-
+  (p.extra_sections || []).forEach(s => { if (s.type === 'table') html += renderTable(s); });
   el.innerHTML = html;
 }
 
 function renderTable(section) {
   const rows = (section.rows || []).map(row => {
     const bg = TABLE_ROW_BG[row.style] || '';
-    const trStyle = bg ? ` style="background:${bg}"` : '';
-    return `<tr${trStyle}>${(row.cells || []).map(c => `<td>${esc(c)}</td>`).join('')}</tr>`;
+    return `<tr${bg ? ` style="background:${bg}"` : ''}>${(row.cells || []).map(c => `<td>${esc(c)}</td>`).join('')}</tr>`;
   }).join('');
 
-  return `
-    <div class="tab-section">
-      <h4 class="section-label">${esc(section.title)}</h4>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr>${(section.headers || []).map(h => `<th>${esc(h)}</th>`).join('')}</tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>`;
+  return `<div class="tab-section">
+    <h4 class="section-label">${esc(section.title)}</h4>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr>${(section.headers || []).map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
 }
 
 // ── Tab: 성과 & 스택 ──────────────────────────────────────────────────────────
@@ -382,42 +389,35 @@ function renderResultsTab(p) {
   const el = document.getElementById('tab-results');
   let html = '';
 
-  if (p.results && p.results.length > 0) {
-    html += `
-      <div class="tab-section">
-        <h4 class="section-label">주요 성과</h4>
-        <div class="results-grid">
-          ${p.results.map(r => `
-            <div class="result-card">
-              <div class="result-icon">${r.icon}</div>
-              <div class="result-content">
-                <strong class="result-title">${esc(r.title)}</strong>
-                <p class="result-desc">${esc(r.desc)}</p>
-              </div>
+  if (p.results?.length) {
+    html += `<div class="tab-section">
+      <h4 class="section-label">주요 성과</h4>
+      <div class="results-grid">
+        ${p.results.map(r => `
+          <div class="result-card">
+            <div class="result-icon">${r.icon}</div>
+            <div class="result-content">
+              <strong class="result-title">${esc(r.title)}</strong>
+              <p class="result-desc">${esc(r.desc)}</p>
             </div>
-          `).join('')}
-        </div>
-      </div>`;
+          </div>`).join('')}
+      </div>
+    </div>`;
   }
 
-  if (p.tech_stack && p.tech_stack.length > 0) {
-    html += `
-      <div class="tab-section">
-        <h4 class="section-label">기술 스택</h4>
-        <div class="tech-grid">
-          ${p.tech_stack.map(t => {
-            const meta = TECH_META[t.type] || { bg: '#f1f5f9', fg: '#475569' };
-            const noteHtml = t.note
-              ? `<span class="tech-note">${esc(t.note)}</span>`
-              : '';
-            return `
-              <div class="tech-item" style="background:${meta.bg};color:${meta.fg}">
-                <span class="tech-name">${esc(t.name)}</span>
-                ${noteHtml}
-              </div>`;
-          }).join('')}
-        </div>
-      </div>`;
+  if (p.tech_stack?.length) {
+    html += `<div class="tab-section">
+      <h4 class="section-label">기술 스택</h4>
+      <div class="tech-grid">
+        ${p.tech_stack.map(t => {
+          const meta = TECH_META[t.type] || { bg: '#f1f5f9', fg: '#475569' };
+          return `<div class="tech-item" style="background:${meta.bg};color:${meta.fg}">
+            <span class="tech-name">${esc(t.name)}</span>
+            ${t.note ? `<span class="tech-note">${esc(t.note)}</span>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
   }
 
   el.innerHTML = html;

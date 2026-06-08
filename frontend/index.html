@@ -16,30 +16,53 @@
     <section class="hero">
       <div class="container">
         <div class="hero-inner">
+
           <div class="hero-left">
-            <span class="hero-tag">AI 개발자 · 데이터 파이프라인 엔지니어</span>
+            <span class="hero-tagline" id="hero-tagline">안정적인 프로덕트를 지켜드리는 엔지니어</span>
             <h1 class="hero-name" id="hero-name">김민규</h1>
-            <p class="hero-desc" id="hero-desc"></p>
-            <div id="hero-skills" class="skill-pills"></div>
-            <div class="hero-contact">
+            <div id="hero-intro" class="hero-intro"></div>
+            <div class="hero-links">
               <a id="contact-email" class="contact-link" href="#">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="4" width="20" height="16" rx="2"/>
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                 </svg>
                 <span id="contact-email-text"></span>
               </a>
+              <a id="contact-github" class="contact-link" href="#" target="_blank" rel="noopener noreferrer">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
+                </svg>
+                GitHub
+              </a>
             </div>
+            <div id="hero-skills" class="skill-pills"></div>
             <p id="contact-note" class="contact-note"></p>
           </div>
+
           <div class="hero-right">
-            <div id="stats-grid" class="stats-grid"></div>
+            <div class="profile-photo-wrap">
+              <img src="/static/images/profile.jpg" alt="김민규 프로필" class="profile-photo">
+            </div>
+            <div id="hero-personal" class="hero-personal"></div>
           </div>
+
         </div>
       </div>
     </section>
 
-    <!-- ── Projects ── -->
+    <!-- ── 경력 ── -->
+    <section class="career-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">경력</h2>
+        </div>
+        <div id="career-list" class="career-list"></div>
+        <div id="education-block" class="education-block"></div>
+      </div>
+    </section>
+
+    <!-- ── 프로젝트 ── -->
     <section class="projects-section">
       <div class="container">
         <div class="section-header">
@@ -73,7 +96,7 @@
         <p id="modal-subtitle" class="modal-subtitle"></p>
       </div>
 
-      <div class="modal-tabs" id="modal-tabs">
+      <div class="modal-tabs">
         <button class="tab-btn active" data-tab="overview">개요</button>
         <button class="tab-btn" data-tab="architecture">구조</button>
         <button class="tab-btn" data-tab="contribution">기여</button>
@@ -81,10 +104,10 @@
       </div>
 
       <div class="modal-body">
-        <div id="tab-overview"      class="tab-pane active"></div>
-        <div id="tab-architecture"  class="tab-pane"></div>
-        <div id="tab-contribution"  class="tab-pane"></div>
-        <div id="tab-results"       class="tab-pane"></div>
+        <div id="tab-overview"     class="tab-pane active"></div>
+        <div id="tab-architecture" class="tab-pane"></div>
+        <div id="tab-contribution" class="tab-pane"></div>
+        <div id="tab-results"      class="tab-pane"></div>
       </div>
 
     </div>
