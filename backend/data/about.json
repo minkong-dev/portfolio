@@ -1,0 +1,17 @@
+{
+  "name": "김민규",
+  "role": "AI 개발자 · 데이터 파이프라인 엔지니어",
+  "description": "축산 AI 모니터링 서비스에서 데이터 수집 파이프라인·라벨링 도구·통합 관리 플랫폼을 주도적으로 설계·개발했습니다. AI 학습 인프라 전반(수집→라벨링→분석·통계)을 직접 구축한 경험이 있습니다.",
+  "skills": ["Python", "PyQt5", "OpenCV", "PyTorch", "Socket.IO", "SQLite", "FastAPI", "Docker", "SAM2", "YOLO", "gRPC", "Matplotlib"],
+  "stats": [
+    { "num": "7",     "label": "개발 프로젝트" },
+    { "num": "4",     "label": "라벨링·수집 도구" },
+    { "num": "85.9%", "label": "CNN 동물 분류 정확도" },
+    { "num": "11",    "label": "YOLO 클래스 정의" }
+  ],
+  "contact": {
+    "email": "minkong010521@gmail.com",
+    "github": "",
+    "note": "보안 계약에 따라 서비스명·고객사명·서버 도메인·DB 스키마 일부는 비공개 처리됩니다."
+  }
+}
