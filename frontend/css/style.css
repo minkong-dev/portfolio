@@ -68,7 +68,7 @@ img { display: block; }
 }
 
 .hero-left  { flex: 1 1 0; min-width: 0; }
-.hero-right { flex: 0 0 170px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.hero-right { flex: 0 0 130px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 
 /* tagline */
 .hero-tagline {
@@ -158,8 +158,8 @@ img { display: block; }
 
 /* profile photo */
 .profile-photo-wrap {
-  width: 160px;
-  height: 210px;
+  width: 120px;
+  height: 158px;
   border-radius: var(--r-lg);
   overflow: hidden;
   border: 1px solid var(--border);
@@ -789,10 +789,10 @@ img { display: block; }
 
 /* ── Responsive ────────────────────────────────────────────────────────────── */
 @media (max-width: 860px) {
-  .hero-inner { flex-direction: column-reverse; gap: 32px; }
-  .hero-right  { flex-direction: row; width: 100%; align-items: flex-start; }
-  .profile-photo-wrap { width: 120px; height: 158px; }
-  .career-left { flex: 0 0 130px; }
+  .hero-inner { flex-direction: column-reverse; gap: 24px; }
+  .hero-right  { flex-direction: row; width: 100%; align-items: flex-start; flex: none; }
+  .profile-photo-wrap { width: 100px; height: 132px; }
+  .career-left { flex: 0 0 120px; }
 }
 
 @media (max-width: 600px) {

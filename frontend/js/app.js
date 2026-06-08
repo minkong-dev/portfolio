@@ -109,23 +109,29 @@ function renderHero(about) {
 // ── Career ────────────────────────────────────────────────────────────────────
 function renderCareer(about) {
   const listEl = document.getElementById('career-list');
-  if (listEl && Array.isArray(about.career)) {
-    listEl.innerHTML = about.career.map(c => `
-      <div class="career-item">
-        <div class="career-left">
-          <span class="career-type-badge badge-${esc(c.type)}">${esc(c.type)}</span>
-          <div class="career-period">${esc(c.period)}</div>
-          <div class="career-duration">${esc(c.duration)}</div>
+  const career = about.career || [];
+
+  if (listEl) {
+    if (career.length > 0) {
+      listEl.innerHTML = career.map(c => `
+        <div class="career-item">
+          <div class="career-left">
+            <span class="career-type-badge badge-${esc(c.type || '')}">${esc(c.type || '')}</span>
+            <div class="career-period">${esc(c.period || '')}</div>
+            <div class="career-duration">${esc(c.duration || '')}</div>
+          </div>
+          <div class="career-right">
+            <div class="career-company">${esc(c.company || '')}</div>
+            <div class="career-role">${esc(c.role || '')}${c.field ? ' · ' + esc(c.field) : ''}</div>
+            <ul class="career-tasks">
+              ${(c.tasks || []).map(t => `<li class="career-task">${esc(t)}</li>`).join('')}
+            </ul>
+          </div>
         </div>
-        <div class="career-right">
-          <div class="career-company">${esc(c.company)}</div>
-          <div class="career-role">${esc(c.role)} · ${esc(c.field)}</div>
-          <ul class="career-tasks">
-            ${(c.tasks || []).map(t => `<li class="career-task">${esc(t)}</li>`).join('')}
-          </ul>
-        </div>
-      </div>
-    `).join('');
+      `).join('');
+    } else {
+      listEl.innerHTML = '';
+    }
   }
 
   const eduEl = document.getElementById('education-block');
@@ -133,8 +139,8 @@ function renderCareer(about) {
     const e = about.education;
     eduEl.innerHTML = `
       <span class="edu-label">학력</span>
-      <span class="edu-info">${esc(e.school)} · ${esc(e.major)}</span>
-      <span class="edu-sub">${esc(e.period)} (${esc(e.status)})</span>
+      <span class="edu-info">${esc(e.school || '')} · ${esc(e.major || '')}</span>
+      <span class="edu-sub">${esc(e.period || '')}${e.status ? ' (' + esc(e.status) + ')' : ''}</span>
     `;
   }
 }
